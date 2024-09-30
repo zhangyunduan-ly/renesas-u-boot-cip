@@ -21,6 +21,7 @@
 #include <mmc.h>
 #include <rzg2l_wdt.h>
 #include <wdt.h>
+#include <linux/delay.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -54,6 +55,26 @@ DECLARE_GLOBAL_DATA_PTR;
 #define PFC_PFC15					(PFC_BASE + 0x454)
 #define PFC_PMC3A					(PFC_BASE + 0x23a)
 #define PFC_PFC3A					(PFC_BASE + 0x4e8)
+
+/*P44_3*/
+#define PFC_P3C						(PFC_BASE + 0x03C)
+#define PFC_PM3C					(PFC_BASE + 0x178)
+#define PFC_PMC3C					(PFC_BASE + 0x23C)
+
+/*P43_3*/
+#define PFC_P3B						(PFC_BASE + 0x03B)
+#define PFC_PM3B					(PFC_BASE + 0x176)
+#define PFC_PMC3B					(PFC_BASE + 0x23B)
+
+/*P10*/
+#define PFC_P1A						(PFC_BASE + 0x01A)
+#define PFC_PM1A					(PFC_BASE + 0x134)
+#define PFC_PMC1AC					(PFC_BASE + 0x21A)
+
+/*P11*/
+#define PFC_P1B						(PFC_BASE + 0x01B)
+#define PFC_PM1B					(PFC_BASE + 0x136)
+#define PFC_PMC1BC					(PFC_BASE + 0x21B)
 
 #define USBPHY_BASE		(0x11c40000)
 #define USB0_BASE		(0x11c50000)
