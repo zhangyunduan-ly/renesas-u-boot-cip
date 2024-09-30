@@ -154,6 +154,32 @@ int board_init(void)
 {
 	/* adress of boot parameters */
 	gd->bd->bi_boot_params = CONFIG_SYS_TEXT_BASE + 0x50000;
+	
+    mdelay(140);
+
+    // phy1 reset
+    *(volatile u32 *)(PFC_PMC3C) &= 0xFFFFFFF7; /* Port func mode  */
+    *(volatile u32 *)(PFC_PM3C) = (*(volatile u32 *)(PFC_PM3C) & 0xFFFFFF3F) | 0x80; /* Port output mode 0b10 */
+
+    //mdelay(13);
+    *(volatile u32 *)(PFC_P3C) = (*(volatile u32 *)(PFC_P3C) & 0xFFFFFFF7) | 0x08; //high
+    mdelay(20);
+    /*value*/
+    *(volatile u32 *)(PFC_P3C) = (*(volatile u32 *)(PFC_P3C) & 0xFFFFFFF7) | 0x0; // low
+    mdelay(13);
+    *(volatile u32 *)(PFC_P3C) = (*(volatile u32 *)(PFC_P3C) & 0xFFFFFFF7) | 0x08; //high
+
+
+    // phy2 reset
+    *(volatile u32 *)(PFC_PMC3B) &= 0xFFFFFFFB; /* Port func mode  */
+    *(volatile u32 *)(PFC_PM3B) = (*(volatile u32 *)(PFC_PM3B) & 0xFFFFFF3F) | 0x80; /* Port output mode 0b10 */
+
+    *(volatile u32 *)(PFC_P3B) = (*(volatile u32 *)(PFC_P3B) & 0xFFFFFFF7) | 0x08;
+    mdelay(20);
+    *(volatile u32 *)(PFC_P3B) = (*(volatile u32 *)(PFC_P3B) & 0xFFFFFFF7) | 0x0;
+    mdelay(13);
+    *(volatile u32 *)(PFC_P3B) = (*(volatile u32 *)(PFC_P3B) & 0xFFFFFFF7) | 0x08;
+
 	board_usb_init();
 
 	return 0;
@@ -181,3 +207,53 @@ int board_late_init(void)
 
 	return 0;
 }
+
+int sdhi1_gpio(int num)
+{
+    if(num==0){
+        //P10
+       *(volatile u32 *)(PFC_PMC1AC) &= 0xFFFFFFFC; /* Port func mode  */
+       *(volatile u32 *)(PFC_PM1A) = (*(volatile u32 *)(PFC_PM1A) & 0xFFFFFFF0) | 0x0A; /* Port output mode 0b1010 */
+       *(volatile u32 *)(PFC_P1A) = (*(volatile u32 *)(PFC_P1A) & 0xFFFFFFFC) | 0x00;   //low
+       mdelay(5);
+       //P11
+       *(volatile u32 *)(PFC_PMC1BC) &= 0xFFFFFFFC; /* Port func mode  */
+       *(volatile u32 *)(PFC_PM1B) = (*(volatile u32 *)(PFC_PM1B) & 0xFFFFFFF0) | 0x0A; /* Port output mode 0b1010 */
+       *(volatile u32 *)(PFC_P1B) = (*(volatile u32 *)(PFC_P1B) & 0xFFFFFFFC) | 0x00;   //low
+    }else if(num==1){
+       *(volatile u32 *)(PFC_PMC1AC) &= 0xFFFFFFFC; /* Port func mode  */
+       *(volatile u32 *)(PFC_PM1A) = (*(volatile u32 *)(PFC_PM1A) & 0xFFFFFFF0) | 0x0A; /* Port output mode 0b1010 */
+       *(volatile u32 *)(PFC_P1A) = (*(volatile u32 *)(PFC_P1A) & 0xFFFFFFFC) | 0x01;
+       mdelay(5);
+       //P11
+       *(volatile u32 *)(PFC_PMC1BC) &= 0xFFFFFFFC; /* Port func mode  */
+       *(volatile u32 *)(PFC_PM1B) = (*(volatile u32 *)(PFC_PM1B) & 0xFFFFFFF0) | 0x0A; /* Port output mode 0b1010 */
+       *(volatile u32 *)(PFC_P1B) = (*(volatile u32 *)(PFC_P1B) & 0xFFFFFFFC) | 0x01;
+    }
+
+    return 0;
+}
+
+static int do_sdhiswitch(struct cmd_tbl *cmdtp, int flag, int argc,
+                         char *const argv[])
+{
+    int ret=0;
+
+    if (strcmp(argv[1], "sdcard") == 0) {
+        sdhi1_gpio(0);
+        printf("switch to sdcard\n");
+    }else if (strcmp(argv[1], "wifi") == 0) {
+        sdhi1_gpio(1);
+        printf("switch to wifi\n");
+    }else {
+        printf("sdhi not found \n");
+    }
+
+    return ret;
+}
+
+U_BOOT_CMD(
+      switch_sdhi1, 2, 1, do_sdhiswitch,
+       "sdhi1 switch",
+       ""
+);
