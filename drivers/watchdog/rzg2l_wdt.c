@@ -44,6 +44,18 @@
 /* Reset Control Register WDT (CPG_RST_WDT) */
 #define CPG_RST_WDT			0x11010848
 
+#define DEBUG_GPIO_WATCHDOG
+
+#ifdef DEBUG_GPIO_WATCHDOG
+#define PFC_BASE	0x11030000
+/* P40_2 */
+#define PFC_P38		(PFC_BASE + 0x038)
+#define PFC_PM38	(PFC_BASE + 0x170)
+#define PFC_PMC38	(PFC_BASE + 0x238)
+
+static int feed_dog_index = 0;
+#endif
+
 static bool second_init;
 bool watchdog_overflow;
 
@@ -117,6 +129,16 @@ int rzg2l_wdt_reset(struct udevice *watchdog_dev)
 		env_set_ulong("wdt_status", priv->is_active);
 		env_set_ulong("wdt_timeout", priv->timeout * 1000);
 	}
+
+#ifdef DEBUG_GPIO_WATCHDOG
+	/* control gpio */
+	if (feed_dog_index % 2) {
+		*(volatile u32 *)(PFC_P38) = (*(volatile u32 *)(PFC_P38) & 0xFFFFFFFB) | 0x04; //high
+	} else {
+		*(volatile u32 *)(PFC_P38) = (*(volatile u32 *)(PFC_P38) & 0xFFFFFFFB) | 0x00; //low
+	}
+	feed_dog_index++;
+#endif
 
 	return 0;
 }
@@ -205,6 +227,13 @@ static int rzg2l_wdt_start(struct udevice *watchdog_dev, u64 timeout, ulong flag
 		priv->is_active = 1;
 	}
 
+#ifdef DEBUG_GPIO_WATCHDOG
+	/* init gpio */
+	*(volatile u32 *)(PFC_PMC38) &= 0xFFFFFFFB; /* Port func mode */
+	*(volatile u32 *)(PFC_PM38) = (*(volatile u32 *)(PFC_PM38) & 0xFFFFFFCF) | 0x20; /* Port output mode 0b10 */
+	*(volatile u32 *)(PFC_P38) = (*(volatile u32 *)(PFC_P38) & 0xFFFFFFFB) | 0x04; //high
+#endif
+
 	/* Flag decides to change watchdog environment variables
 	 * flag = 1: Change environment variables.
 	 * Other cases: Do not change evironment variables.
@@ -281,6 +310,13 @@ static int rzg2l_wdt_probe(struct udevice *watchdog_dev)
 	pclk_rate = 100000000;
 
 	priv->delay = F2CYCLE_NSEC(priv->osc_clk_rate) * 6 + F2CYCLE_NSEC(pclk_rate) * 9;
+
+#ifdef DEBUG_GPIO_WATCHDOG
+	/* init gpio */
+	*(volatile u32 *)(PFC_PMC38) &= 0xFFFFFFFB; /* Port func mode */
+	*(volatile u32 *)(PFC_PM38) = (*(volatile u32 *)(PFC_PM38) & 0xFFFFFFCF) | 0x20; /* Port output mode 0b10 */
+	*(volatile u32 *)(PFC_P38) = (*(volatile u32 *)(PFC_P38) & 0xFFFFFFFB) | 0x04; //high
+#endif
 
 	return 0;
 }
