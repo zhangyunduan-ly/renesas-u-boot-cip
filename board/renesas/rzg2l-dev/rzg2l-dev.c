@@ -56,26 +56,6 @@ DECLARE_GLOBAL_DATA_PTR;
 #define PFC_PMC3A					(PFC_BASE + 0x23a)
 #define PFC_PFC3A					(PFC_BASE + 0x4e8)
 
-/*P44_3*/
-#define PFC_P3C						(PFC_BASE + 0x03C)
-#define PFC_PM3C					(PFC_BASE + 0x178)
-#define PFC_PMC3C					(PFC_BASE + 0x23C)
-
-/*P43_3*/
-#define PFC_P3B						(PFC_BASE + 0x03B)
-#define PFC_PM3B					(PFC_BASE + 0x176)
-#define PFC_PMC3B					(PFC_BASE + 0x23B)
-
-/*P10*/
-#define PFC_P1A						(PFC_BASE + 0x01A)
-#define PFC_PM1A					(PFC_BASE + 0x134)
-#define PFC_PMC1AC					(PFC_BASE + 0x21A)
-
-/*P11*/
-#define PFC_P1B						(PFC_BASE + 0x01B)
-#define PFC_PM1B					(PFC_BASE + 0x136)
-#define PFC_PMC1BC					(PFC_BASE + 0x21B)
-
 #define USBPHY_BASE		(0x11c40000)
 #define USB0_BASE		(0x11c50000)
 #define USB1_BASE		(0x11c70000)
@@ -97,9 +77,7 @@ DECLARE_GLOBAL_DATA_PTR;
 
 #define GPIO_ID(port, pin)	port, pin
 
-#define PHY1_RST_GPIO		GPIO_ID(44, 3)
-#define PHY2_RST_GPIO		GPIO_ID(43, 3)
-
+/* LCD */
 #define ST75161_CLK_GPIO	GPIO_ID(1, 0)
 #define ST75161_MOSI_GPIO	GPIO_ID(1, 0)
 #define A0_GPIO				GPIO_ID(1, 0)
@@ -493,10 +471,10 @@ void s_init(void)
 #endif
 
 	/* can go in board_eht_init() once enabled */
-	*(volatile u32 *)(ETH_CH0) = (*(volatile u32 *)(ETH_CH0) & 0xFFFFFFFC) | ETH_PVDD_1800;
-	*(volatile u32 *)(ETH_CH1) = (*(volatile u32 *)(ETH_CH1) & 0xFFFFFFFC) | ETH_PVDD_1800;
+	*(volatile u32 *)(ETH_CH0) = (*(volatile u32 *)(ETH_CH0) & 0xFFFFFFFC) | ETH_PVDD_3300;
+	*(volatile u32 *)(ETH_CH1) = (*(volatile u32 *)(ETH_CH1) & 0xFFFFFFFC) | ETH_PVDD_3300;
 	/* Enable RGMII for both ETH{0,1} */
-	*(volatile u32 *)(ETH_MII_RGMII) = (*(volatile u32 *)(ETH_MII_RGMII) & 0xFFFFFFFC);
+	*(volatile u32 *)(ETH_MII_RGMII) = (*(volatile u32 *)(ETH_MII_RGMII) | 0x00000003);
 	/* ETH CLK */
 	*(volatile u32 *)(CPG_RESET_ETH) = 0x30003;
 	/* I2C CLK */
@@ -565,25 +543,7 @@ int board_init(void)
 {
 	/* adress of boot parameters */
 	gd->bd->bi_boot_params = CONFIG_SYS_TEXT_BASE + 0x50000;
-	
-    mdelay(140);
-
-    // phy1 reset
-	rz_gpio_direction_output(PHY1_RST_GPIO, 1);
-	mdelay(20);
-	rz_gpio_set_value(PHY1_RST_GPIO, 0);
-	mdelay(13);
-	rz_gpio_set_value(PHY1_RST_GPIO, 1);
-
-    // phy2 reset
-	rz_gpio_direction_output(PHY2_RST_GPIO, 1);
-	mdelay(20);
-	rz_gpio_set_value(PHY2_RST_GPIO, 0);
-	mdelay(13);
-	rz_gpio_set_value(PHY2_RST_GPIO, 1);
-
 	board_usb_init();
-	
 	// st75161_init();
 
 	return 0;
@@ -612,52 +572,3 @@ int board_late_init(void)
 	return 0;
 }
 
-int sdhi1_gpio(int num)
-{
-    if(num==0){
-        //P10
-       *(volatile u32 *)(PFC_PMC1AC) &= 0xFFFFFFFC; /* Port func mode  */
-       *(volatile u32 *)(PFC_PM1A) = (*(volatile u32 *)(PFC_PM1A) & 0xFFFFFFF0) | 0x0A; /* Port output mode 0b1010 */
-       *(volatile u32 *)(PFC_P1A) = (*(volatile u32 *)(PFC_P1A) & 0xFFFFFFFC) | 0x00;   //low
-       mdelay(5);
-       //P11
-       *(volatile u32 *)(PFC_PMC1BC) &= 0xFFFFFFFC; /* Port func mode  */
-       *(volatile u32 *)(PFC_PM1B) = (*(volatile u32 *)(PFC_PM1B) & 0xFFFFFFF0) | 0x0A; /* Port output mode 0b1010 */
-       *(volatile u32 *)(PFC_P1B) = (*(volatile u32 *)(PFC_P1B) & 0xFFFFFFFC) | 0x00;   //low
-    }else if(num==1){
-       *(volatile u32 *)(PFC_PMC1AC) &= 0xFFFFFFFC; /* Port func mode  */
-       *(volatile u32 *)(PFC_PM1A) = (*(volatile u32 *)(PFC_PM1A) & 0xFFFFFFF0) | 0x0A; /* Port output mode 0b1010 */
-       *(volatile u32 *)(PFC_P1A) = (*(volatile u32 *)(PFC_P1A) & 0xFFFFFFFC) | 0x01;
-       mdelay(5);
-       //P11
-       *(volatile u32 *)(PFC_PMC1BC) &= 0xFFFFFFFC; /* Port func mode  */
-       *(volatile u32 *)(PFC_PM1B) = (*(volatile u32 *)(PFC_PM1B) & 0xFFFFFFF0) | 0x0A; /* Port output mode 0b1010 */
-       *(volatile u32 *)(PFC_P1B) = (*(volatile u32 *)(PFC_P1B) & 0xFFFFFFFC) | 0x01;
-    }
-
-    return 0;
-}
-
-static int do_sdhiswitch(struct cmd_tbl *cmdtp, int flag, int argc,
-                         char *const argv[])
-{
-    int ret=0;
-
-    if (strcmp(argv[1], "sdcard") == 0) {
-        sdhi1_gpio(0);
-        printf("switch to sdcard\n");
-    }else if (strcmp(argv[1], "wifi") == 0) {
-        sdhi1_gpio(1);
-        printf("switch to wifi\n");
-    }else {
-        printf("sdhi not found \n");
-    }
-
-    return ret;
-}
-
-U_BOOT_CMD(
-      switch_sdhi1, 2, 1, do_sdhiswitch,
-       "sdhi1 switch",
-       ""
-);
