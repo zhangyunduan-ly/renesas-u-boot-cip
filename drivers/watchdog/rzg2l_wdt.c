@@ -48,10 +48,10 @@
 
 #ifdef DEBUG_GPIO_WATCHDOG
 #define PFC_BASE	0x11030000
-/* P40_2 */
-#define PFC_P38		(PFC_BASE + 0x038)
-#define PFC_PM38	(PFC_BASE + 0x170)
-#define PFC_PMC38	(PFC_BASE + 0x238)
+/* P39_1 */
+#define PFC_P37		(PFC_BASE + 0x037)
+#define PFC_PM37	(PFC_BASE + 0x16E)
+#define PFC_PMC37	(PFC_BASE + 0x237)
 
 static int feed_dog_index = 0;
 #endif
@@ -133,9 +133,9 @@ int rzg2l_wdt_reset(struct udevice *watchdog_dev)
 #ifdef DEBUG_GPIO_WATCHDOG
 	/* control gpio */
 	if (feed_dog_index % 2) {
-		*(volatile u32 *)(PFC_P38) = (*(volatile u32 *)(PFC_P38) & 0xFFFFFFFB) | 0x04; //high
+		*(volatile u32 *)(PFC_P37) = (*(volatile u32 *)(PFC_P37) & 0xFFFFFFFD) | 0x02; //high
 	} else {
-		*(volatile u32 *)(PFC_P38) = (*(volatile u32 *)(PFC_P38) & 0xFFFFFFFB) | 0x00; //low
+		*(volatile u32 *)(PFC_P37) = (*(volatile u32 *)(PFC_P37) & 0xFFFFFFFD) | 0x00; //low
 	}
 	feed_dog_index++;
 #endif
@@ -229,9 +229,9 @@ static int rzg2l_wdt_start(struct udevice *watchdog_dev, u64 timeout, ulong flag
 
 #ifdef DEBUG_GPIO_WATCHDOG
 	/* init gpio */
-	*(volatile u32 *)(PFC_PMC38) &= 0xFFFFFFFB; /* Port func mode */
-	*(volatile u32 *)(PFC_PM38) = (*(volatile u32 *)(PFC_PM38) & 0xFFFFFFCF) | 0x20; /* Port output mode 0b10 */
-	*(volatile u32 *)(PFC_P38) = (*(volatile u32 *)(PFC_P38) & 0xFFFFFFFB) | 0x04; //high
+	*(volatile u32 *)(PFC_PMC37) &= 0xFFFFFFFD; /* Port func mode */
+	*(volatile u32 *)(PFC_PM37) = (*(volatile u32 *)(PFC_PM37) & 0xFFFFFFF3) | 0x08; /* Port output mode 0b10 */
+	*(volatile u32 *)(PFC_P37) = (*(volatile u32 *)(PFC_P37) & 0xFFFFFFFD) | 0x02; //high
 #endif
 
 	/* Flag decides to change watchdog environment variables
@@ -313,9 +313,9 @@ static int rzg2l_wdt_probe(struct udevice *watchdog_dev)
 
 #ifdef DEBUG_GPIO_WATCHDOG
 	/* init gpio */
-	*(volatile u32 *)(PFC_PMC38) &= 0xFFFFFFFB; /* Port func mode */
-	*(volatile u32 *)(PFC_PM38) = (*(volatile u32 *)(PFC_PM38) & 0xFFFFFFCF) | 0x20; /* Port output mode 0b10 */
-	*(volatile u32 *)(PFC_P38) = (*(volatile u32 *)(PFC_P38) & 0xFFFFFFFB) | 0x04; //high
+	*(volatile u32 *)(PFC_PMC37) &= 0xFFFFFFFD; /* Port func mode */
+	*(volatile u32 *)(PFC_PM37) = (*(volatile u32 *)(PFC_PM37) & 0xFFFFFFF3) | 0x08; /* Port output mode 0b10 */
+	*(volatile u32 *)(PFC_P37) = (*(volatile u32 *)(PFC_P37) & 0xFFFFFFFD) | 0x02; //high
 #endif
 
 	return 0;

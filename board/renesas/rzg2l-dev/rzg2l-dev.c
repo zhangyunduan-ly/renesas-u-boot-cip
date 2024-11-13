@@ -70,20 +70,162 @@ DECLARE_GLOBAL_DATA_PTR;
 /* WDT */
 #define WDT_INDEX		0
 
-/* GPIO */
-#define P(n)	(0x0000 + 0x10 + (n))	  /* Port Register */
-#define PM(n)	(0x0100 + 0x20 + (n) * 2) /* Port Mode Register */
-#define PMC(n)	(0x0200 + 0x10 + (n))	  /* Port Mode Control Register */
+enum Rzg2LGpioPins_E {
+	RZG2L_P00_0=0,
+	RZG2L_P00_1,	
+	RZG2L_P01_0,
+	RZG2L_P01_1,
+	RZG2L_P02_0,
+	RZG2L_P02_1,
+	RZG2L_P03_0,
+	RZG2L_P03_1,
+	RZG2L_P04_0,
+	RZG2L_P04_1,
 
-#define GPIO_ID(port, pin)	port, pin
+	RZG2L_P05_0,
+	RZG2L_P05_1,
+	RZG2L_P05_2,
+	
+	RZG2L_P06_0,
+	RZG2L_P06_1,
+
+	RZG2L_P07_0,
+	RZG2L_P07_1,
+	RZG2L_P07_2,
+	RZG2L_P08_0,
+	RZG2L_P08_1,
+	RZG2L_P08_2,
+
+	RZG2L_P09_0,
+	RZG2L_P09_1,
+	RZG2L_P10_0,
+	RZG2L_P10_1,
+	RZG2L_P11_0,
+	RZG2L_P11_1,
+	RZG2L_P12_0,
+	RZG2L_P12_1,
+
+	RZG2L_P13_0,
+	RZG2L_P13_1,
+	RZG2L_P13_2,
+
+	RZG2L_P14_0,
+	RZG2L_P14_1,
+	RZG2L_P15_0,
+	RZG2L_P15_1,
+	RZG2L_P16_0,
+	RZG2L_P16_1,
+
+	RZG2L_P17_0,
+	RZG2L_P17_1,
+	RZG2L_P17_2,
+
+	RZG2L_P18_0,
+	RZG2L_P18_1,
+	RZG2L_P19_0,
+	RZG2L_P19_1,
+
+	RZG2L_P20_0,
+	RZG2L_P20_1,
+	RZG2L_P20_2,
+
+	RZG2L_P21_0,
+	RZG2L_P21_1,
+	RZG2L_P22_0,
+	RZG2L_P22_1,
+	RZG2L_P23_0,
+	RZG2L_P23_1,
+	RZG2L_P24_0,
+	RZG2L_P24_1,
+	RZG2L_P25_0,
+	RZG2L_P25_1,
+	RZG2L_P26_0,
+	RZG2L_P26_1,
+	RZG2L_P27_0,
+	RZG2L_P27_1,
+	RZG2L_P28_0,
+	RZG2L_P28_1,
+	RZG2L_P29_0,
+	RZG2L_P29_1,
+	RZG2L_P30_0,
+	RZG2L_P30_1,
+	RZG2L_P31_0,
+	RZG2L_P31_1,
+	RZG2L_P32_0,
+	RZG2L_P32_1,
+	RZG2L_P33_0,
+	RZG2L_P33_1,
+	RZG2L_P34_0,
+	RZG2L_P34_1,
+	RZG2L_P35_0,
+	RZG2L_P35_1,
+	RZG2L_P36_0,
+	RZG2L_P36_1,
+	
+	RZG2L_P37_0,
+	RZG2L_P37_1,
+	RZG2L_P37_2,
+	
+	RZG2L_P38_0,
+	RZG2L_P38_1,
+
+	RZG2L_P39_0,
+	RZG2L_P39_1,
+	RZG2L_P39_2,
+	RZG2L_P40_0,
+	RZG2L_P40_1,
+	RZG2L_P40_2,
+
+	RZG2L_P41_0,
+	RZG2L_P41_1,
+
+	RZG2L_P42_0,
+	RZG2L_P42_1,
+	RZG2L_P42_2,
+	RZG2L_P42_3,
+	RZG2L_P42_4,
+
+	RZG2L_P43_0,
+	RZG2L_P43_1,
+	RZG2L_P43_2,
+	RZG2L_P43_3,
+	RZG2L_P44_0,
+	RZG2L_P44_1,
+	RZG2L_P44_2,
+	RZG2L_P44_3,
+	RZG2L_P45_0,
+	RZG2L_P45_1,
+	RZG2L_P45_2,
+	RZG2L_P45_3,
+	RZG2L_P46_0,
+	RZG2L_P46_1,
+	RZG2L_P46_2,
+	RZG2L_P46_3,
+	RZG2L_P47_0,
+	RZG2L_P47_1,
+	RZG2L_P47_2,
+	RZG2L_P47_3,
+
+	RZG2L_P48_0,
+	RZG2L_P48_1,
+	RZG2L_P48_2,
+	RZG2L_P48_3,
+	RZG2L_P48_4
+};
+
+/* PERIPHERAL Power Control */
+#define PERIPHERAL_POWER_GPIO	RZG2L_P17_2
+
+/* LED */
+#define RUN_LED_GPIO			RZG2L_P17_0
 
 /* LCD */
-#define ST75161_CLK_GPIO	GPIO_ID(1, 0)
-#define ST75161_MOSI_GPIO	GPIO_ID(1, 0)
-#define A0_GPIO				GPIO_ID(1, 0)
-#define CSB_GPIO			GPIO_ID(1, 0)
-#define RSTB_GPIO			GPIO_ID(1, 0)
-#define BL_GPIO				GPIO_ID(1, 0)
+#define ST75161_CLK_GPIO		RZG2L_P19_1
+#define ST75161_MOSI_GPIO		RZG2L_P19_0
+#define A0_GPIO					RZG2L_P18_1
+#define CSB_GPIO				RZG2L_P45_2
+#define RSTB_GPIO				RZG2L_P18_0
+#define BL_GPIO					RZG2L_P45_3
 
 #define LCD_Com		160
 #define LCD_Seg		160
@@ -253,38 +395,16 @@ static unsigned char logo_sms_st75161[LCD_PAGE_SIZE*LCD_COL_SIZE]= {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 }; 
 
-static int rz_gpio_set_value(unsigned int port, unsigned int pin, int value)
-{
-	if (value)
-		setbits_8(PFC_BASE + P(port), BIT(pin));
-	else
-		clrbits_8(PFC_BASE + P(port), BIT(pin));
-}
-
-static int rz_gpio_direction_output(unsigned int port, unsigned int pin, int value)
-{
-	u16 reg16;
-
-	rz_gpio_set_value(port, pin, value);
-
-	clrbits_8(PFC_BASE + PMC(port), BIT(pin));
-
-	reg16 = readw(PFC_BASE + PM(pin));
-	reg16 = reg16 & ~(0x03 << (pin * 2));
-
-	writew(reg16 | (0x02 << (pin * 2)), PFC_BASE + PM(port));
-}
-
 static inline int st75161_write_cmd(unsigned char ch)
 {
 	unsigned char i;
 
-	rz_gpio_set_value(A0_GPIO, 0);
-	
+	gpio_set_value(A0_GPIO, 0); 
+
 	for (i = 0; i < 8; i++) {
-		rz_gpio_set_value(ST75161_CLK_GPIO, 0);
-		rz_gpio_set_value(ST75161_MOSI_GPIO, ch & (0x80 >> i));
-		rz_gpio_set_value(ST75161_CLK_GPIO, 1);
+		gpio_set_value(ST75161_CLK_GPIO, 0); 
+		gpio_set_value(ST75161_MOSI_GPIO, !!(ch & (0x80 >> i))); 
+		gpio_set_value(ST75161_CLK_GPIO, 1); 
 	}
 	
 	return 0;
@@ -294,12 +414,12 @@ static inline int st75161_write_dat(unsigned char ch)
 {
 	unsigned char i;
 
-	rz_gpio_set_value(A0_GPIO, 1);
+	gpio_set_value(A0_GPIO, 1);
 	
 	for (i = 0; i < 8; i++) {
-		rz_gpio_set_value(ST75161_CLK_GPIO, 0);
-		rz_gpio_set_value(ST75161_MOSI_GPIO, ch & (0x80 >> i));
-		rz_gpio_set_value(ST75161_CLK_GPIO, 1);
+		gpio_set_value(ST75161_CLK_GPIO, 0); 
+		gpio_set_value(ST75161_MOSI_GPIO, !!(ch & (0x80 >> i))); 
+		gpio_set_value(ST75161_CLK_GPIO, 1); 
 	}
 
 	return 0;
@@ -312,22 +432,28 @@ static int st75161_init(void)
 	int lop = 0;
 
 	/* st75161 set pin */
-	rz_gpio_direction_output(ST75161_CLK_GPIO, 1);
-	rz_gpio_direction_output(ST75161_MOSI_GPIO, 1);
-	rz_gpio_direction_output(A0_GPIO, 1);
-	rz_gpio_direction_output(CSB_GPIO, 1);
-	rz_gpio_direction_output(RSTB_GPIO, 1);
-	rz_gpio_direction_output(BL_GPIO, 1);
+	gpio_request(ST75161_CLK_GPIO, "LCD_CLK");
+	gpio_request(ST75161_MOSI_GPIO, "LCD_MOSI");
+	gpio_request(A0_GPIO, "LCD_A0");
+	gpio_request(CSB_GPIO, "LCD_CSB");
+	gpio_request(RSTB_GPIO, "LCD_RTSB");
+	gpio_request(BL_GPIO, "LCD_BL");
+	gpio_direction_output(ST75161_CLK_GPIO, 1);
+	gpio_direction_output(ST75161_MOSI_GPIO, 1);
+	gpio_direction_output(A0_GPIO, 1);
+	gpio_direction_output(CSB_GPIO, 1);
+	gpio_direction_output(RSTB_GPIO, 1);
+	gpio_direction_output(BL_GPIO, 1);
 
 	/* st75161 reset */	
-	rz_gpio_set_value(RSTB_GPIO, 0);
+	gpio_set_value(RSTB_GPIO, 0);
 	mdelay(20);
-	rz_gpio_set_value(RSTB_GPIO, 1);
+	gpio_set_value(RSTB_GPIO, 1);
 	mdelay(20);
 
 	/* st75161 register init */
-	rz_gpio_set_value(CSB_GPIO, 0);
-	mdelay(1);
+	gpio_set_value(CSB_GPIO, 0);
+	udelay(1);
 	st75161_write_cmd(0x31);		// Extension Command 2
 	st75161_write_cmd(0xD7);		// Disable Auto Read
 
@@ -456,6 +582,17 @@ static int st75161_init(void)
     }
 
 	st75161_write_cmd(0xAF);	// Display ON
+
+	gpio_set_value(CSB_GPIO, 1);
+}
+
+static void peripheral_init()
+{
+	gpio_request(PERIPHERAL_POWER_GPIO, "PERIPHERAL_POWER");
+	gpio_direction_output(PERIPHERAL_POWER_GPIO, 1);
+
+	gpio_request(RUN_LED_GPIO, "RUN_LED");
+	gpio_direction_output(RUN_LED_GPIO, 0);
 }
 
 void s_init(void)
@@ -544,7 +681,6 @@ int board_init(void)
 	/* adress of boot parameters */
 	gd->bd->bi_boot_params = CONFIG_SYS_TEXT_BASE + 0x50000;
 	board_usb_init();
-	// st75161_init();
 
 	return 0;
 }
@@ -568,6 +704,8 @@ int board_late_init(void)
 #ifdef CONFIG_RENESAS_RZG2LWDT
 	rzg2l_reinitr_wdt();
 #endif // CONFIG_RENESAS_RZG2LWDT
+	peripheral_init();
+	st75161_init();
 
 	return 0;
 }
