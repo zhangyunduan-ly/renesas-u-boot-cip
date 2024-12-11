@@ -219,6 +219,12 @@ enum Rzg2LGpioPins_E {
 /* LED */
 #define RUN_LED_GPIO			RZG2L_P17_0
 
+/* WDT */
+#define WDT_GPIO				RZG2L_P39_1
+
+/* BLUETOOTH */
+#define BT_PWR_GPIO				RZG2L_P47_2
+
 /* LCD */
 #define ST75161_CLK_GPIO		RZG2L_P19_1
 #define ST75161_MOSI_GPIO		RZG2L_P19_0
@@ -593,6 +599,9 @@ static void peripheral_init()
 
 	gpio_request(RUN_LED_GPIO, "RUN_LED");
 	gpio_direction_output(RUN_LED_GPIO, 0);
+
+	gpio_request(BT_PWR_GPIO, "BT_PWR");
+	gpio_direction_output(BT_PWR_GPIO, 0);
 }
 
 void s_init(void)
@@ -699,13 +708,33 @@ void reset_cpu(void)
 #endif // CONFIG_RENESAS_RZG2LWDT
 }
 
+static int feed_dog_index = 0;
+
+void hw_wdt_init(void)
+{
+	gpio_request(WDT_GPIO, "WDT");
+	gpio_direction_output(WDT_GPIO, 1);
+}
+
+void hw_wdt_feed(void)
+{
+	if (feed_dog_index % 2) {
+		gpio_direction_output(WDT_GPIO, 1); //high
+	} else {
+		gpio_direction_output(WDT_GPIO, 0); //low
+	}
+	feed_dog_index++;
+}
+
 int board_late_init(void)
 {
 #ifdef CONFIG_RENESAS_RZG2LWDT
 	rzg2l_reinitr_wdt();
 #endif // CONFIG_RENESAS_RZG2LWDT
+	hw_wdt_init();
 	peripheral_init();
 	st75161_init();
+	hw_wdt_feed();
 
 	return 0;
 }

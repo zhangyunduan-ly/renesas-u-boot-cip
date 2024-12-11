@@ -44,7 +44,7 @@
 /* Reset Control Register WDT (CPG_RST_WDT) */
 #define CPG_RST_WDT			0x11010848
 
-#define DEBUG_GPIO_WATCHDOG
+// #define DEBUG_GPIO_WATCHDOG
 
 #ifdef DEBUG_GPIO_WATCHDOG
 #define PFC_BASE	0x11030000
