@@ -214,16 +214,13 @@ enum Rzg2LGpioPins_E {
 };
 
 /* PERIPHERAL Power Control */
-#define PERIPHERAL_POWER_GPIO	RZG2L_P17_2
+#define PERIPHERAL_POWER_GPIO	RZG2L_P15_0
 
 /* LED */
-#define RUN_LED_GPIO			RZG2L_P17_0
+#define RUN_LED_GPIO			RZG2L_P39_1
 
 /* WDT */
-#define WDT_GPIO				RZG2L_P39_1
-
-/* BLUETOOTH */
-#define BT_PWR_GPIO				RZG2L_P47_2
+#define WDT_GPIO				RZG2L_P17_1
 
 /* LCD */
 #define ST75161_CLK_GPIO		RZG2L_P19_1
@@ -599,9 +596,6 @@ static void peripheral_init()
 
 	gpio_request(RUN_LED_GPIO, "RUN_LED");
 	gpio_direction_output(RUN_LED_GPIO, 0);
-
-	gpio_request(BT_PWR_GPIO, "BT_PWR");
-	gpio_direction_output(BT_PWR_GPIO, 0);
 }
 
 void s_init(void)
@@ -733,7 +727,7 @@ int board_late_init(void)
 #endif // CONFIG_RENESAS_RZG2LWDT
 	hw_wdt_init();
 	peripheral_init();
-	st75161_init();
+	// st75161_init();
 	hw_wdt_feed();
 
 	return 0;
